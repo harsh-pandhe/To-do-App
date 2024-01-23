@@ -130,14 +130,14 @@ function displayTasks() {
             <td>${task.dueDate ? task.dueDate : '-'}</td>
             <td>${task.dueTime ? task.dueTime : '-'}</td>
             <td>${task.priority}</td>
-            <td>
-                <button class="btn btn-warning btn-sm" onclick="modifyTask(${task.id})">
+            <td id="imp">
+                <button class="btn btn-warning btn-sm darkmode-ignore" onclick="modifyTask(${task.id})">
                     <i class="fas fa-edit"></i>
                 </button>
-                <button class="btn btn-danger btn-sm" onclick="removeTask(${task.id})">
+                <button class="btn btn-danger btn-sm darkmode-ignore" onclick="removeTask(${task.id})">
                     <i class="fas fa-trash-alt"></i>
                 </button>
-                <button class="btn btn-${task.completed ? 'secondary' : 'success'} btn-sm" onclick="toggleCompletion(${task.id})">
+                <button class="btn darkmode-ignore btn-${task.completed ? 'secondary' : 'success'} btn-sm" onclick="toggleCompletion(${task.id})">
                     <i class="${task.completed ? 'fas fa-undo' : 'fas fa-check'}"></i>
                 </button>
             </td>
@@ -403,9 +403,9 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 const options = {
-    bottom: '64px', // default: '32px'
-    right: 'unset', // default: '32px'
-    left: '32px', // default: 'unset'
+    bottom: '93%', // default: '32px'
+    right: '2%', // default: '32px'
+    left: 'unset', // default: 'unset'
     time: '0.5s', // default: '0.3s'
     mixColor: '#fff', // default: '#fff'
     backgroundColor: '#fff',  // default: '#fff'

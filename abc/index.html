@@ -16,6 +16,7 @@
         integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
         crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastify-js/1.12.0/toastify.min.css">
+    <link rel="stylesheet" href="/abc/style.css">
 </head>
 
 <body class="container-fluid">
@@ -26,110 +27,132 @@
             <!-- Main heading for the To-Do List -->
             <h1 class="text-center">To-Do List</h1>
 
-            <!-- Input group for adding new tasks -->
-            <div class="input-group mb-3">
-                <!-- Label for the task input (visually hidden) -->
-                <label for="taskInput" class="visually-hidden">New Task</label>
+            <!-- Search input field and Sorting and Filtering section -->
+            <div class="input-group mt-3">
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addTaskModal">
+                    <i class="fas fa-plus"></i> Add Task
+                </button>
+                <input type="text" id="searchInput" class="ms-2 form-control" placeholder="Search tasks..."
+                    aria-label="Search Task">
+                <button class="btn btn-primary me-2" onclick="searchTasks()" data-bs-toggle="tooltip"
+                    data-bs-placement="top" title="Search"><i class="fas fa-search"></i></button>
+                <section>
+                    <!-- Icons for sorting tasks -->
+                    <button class=" btn btn-primary me-2" onclick="sortAlphabetically()" data-bs-toggle="tooltip"
+                        data-bs-placement="top" title="Sort Alphabetically"><i
+                            class="fas fa-sort-alpha-up"></i></button>
+                    <button class="btn btn-secondary me-2" onclick="sortByCompletion()" data-bs-toggle="tooltip"
+                        data-bs-placement="top" title="Sort by Completion"><i
+                            class="fas fa-sort-amount-up-alt"></i></button>
+                    <button class="btn btn-primary me-2" onclick="sortByDueDate()" data-bs-toggle="tooltip"
+                        data-bs-placement="top" title="Sort by Due Date"><i class="fas fa-calendar-alt"></i></button>
+                    <button class="btn btn-warning me-2" onclick="sortTasksByPriority()" data-bs-toggle="tooltip"
+                        data-bs-placement="top" title="Sort by Priority"><i
+                            class="fas fa-sort-amount-down-alt"></i></button>
 
-                <!-- Task input field -->
-                <input type="text" id="taskInput" class="form-control" placeholder="Add a new task..."
-                    aria-label="New Task">
-
-                <!-- Due date input field -->
-                <input type="date" id="dueDateInput" class="form-control" aria-label="Due Date">
-
-                <!-- Due time input field -->
-                <input type="time" id="dueTimeInput" class="form-control" aria-label="Due Time">
-
-                <!-- Priority input field -->
-                <select id="priorityInput" class="form-select" aria-label="Priority">
-                    <option value="High">High</option>
-                    <option value="Medium">Medium</option>
-                    <option value="Low">Low</option>
-                </select>
-
-                <!-- Button to add a new task -->
-                <button class="btn btn-primary" onclick="addTask()">Add Task</button>
+                    <!-- Icons for data export -->
+                    <button class="btn btn-primary me-2" onclick="exportData()" data-bs-toggle="tooltip"
+                        data-bs-placement="top" title="Export Data"><i class="fas fa-file-export"></i></button>
+                </section>
             </div>
 
-            <!-- Task list container -->
-            <div>
-                <!-- Bootstrap table for displaying tasks -->
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th scope="col">Task</th>
-                            <th scope="col">Due Date</th>
-                            <th scope="col">Due Time</th>
-                            <th scope="col">Priority</th>
-                            <th scope="col">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="taskListTableBody">
-                        <!-- Tasks will be dynamically added here -->
-                    </tbody>
-                </table>
-            </div>
+            <!-- Bootstrap table for displaying tasks -->
+            <table class="table mt-3">
+                <thead>
+                    <tr>
+                        <th scope="col">Task</th>
+                        <th scope="col">Due Date</th>
+                        <th scope="col">Due Time</th>
+                        <th scope="col">Priority</th>
+                        <th scope="col">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="taskListTableBody">
+                    <!-- Tasks will be dynamically added here -->
+                </tbody>
+            </table>
 
-            <!-- Task Management card for sorting, searching, exporting/importing, and statistics -->
-            <div class="container mt-5">
-                <!-- Heading for Sorting and Filtering section -->
-                <h1 class="text-center">Task Management</h1>
+            <!-- Statistics and Analytics section -->
+            <div class="mt-5">
+                <!-- Subheading for Statistics and Analytics -->
+                <h2 class="mb-4 text-center">Statistics and Analytics</h2>
 
-                <!-- Sorting and Filtering section -->
-                <div class="mb-4">
-                    <!-- Subheading for Sorting and Filtering -->
-                    <h2>Sorting and Filtering</h2>
-
-                    <!-- Buttons for sorting tasks -->
-                    <button class="btn btn-primary" onclick="sortAlphabetically()">Sort Alphabetically</button>
-                    <button class="btn btn-secondary" onclick="sortByCompletion()">Sort by Completion</button>
-                    <button class="btn btn-primary" onclick="sortByDueDate()">Sort by Due Date</button>
-                    <button class="btn btn-warning" onclick="sortTasksByPriority()">Sort by Priority</button>
-
-                    <!-- Input field for searching tasks -->
-                    <div class="input-group mt-3">
-                        <input type="text" id="searchInput" class="form-control" placeholder="Search tasks..."
-                            aria-label="Search Task">
-                        <button class="btn btn-primary" onclick="searchTasks()">Search</button>
-
-                    </div>
-                    <!-- Add search functionality here -->
-                </div>
-
-                <!-- Data Export section -->
-                <div class="mb-4">
-                    <!-- Subheading for Data Export -->
-                    <h2>Data Export</h2>
-
-                    <!-- Buttons and file input for exporting and importing data -->
-                    <button class="btn btn-primary" onclick="exportData()">Export Data</button>
-
-                </div>
-
-                <!-- Statistics and Analytics section -->
-                <div>
-                    <!-- Subheading for Statistics and Analytics -->
-                    <h2>Statistics and Analytics</h2>
-
+                <div class="row">
                     <!-- Display total tasks and completed tasks -->
-                    <p>Total Tasks: <span id="totalTasks">0</span></p>
-                    <p>Completed Tasks: <span id="completedTasks">0</span></p>
+                    <div class="col-md-6">
+                        <p class="mb-2"><strong>Total Tasks:</strong> <span id="totalTasks">0</span></p>
+                        <p class="mb-2"><strong>Completed Tasks:</strong> <span id="completedTasks">0</span></p>
+                    </div>
 
                     <!-- Display tasks overdue -->
-                    <p>Tasks Overdue: <span id="tasksOverdue">0</span></p>
-
-                    <!-- Display tasks with high, medium, and low priority -->
-                    <p>High Priority Tasks: <span id="highPriorityTasks">0</span></p>
-                    <p>Medium Priority Tasks: <span id="mediumPriorityTasks">0</span></p>
-                    <p>Low Priority Tasks: <span id="lowPriorityTasks">0</span></p>
-
-                    <canvas id="tasksChart" width="400" height="200"></canvas>
-
+                    <div class="col-md-6">
+                        <p class="mb-2"><strong>Tasks Overdue:</strong> <span id="tasksOverdue">0</span></p>
+                    </div>
                 </div>
 
+                <hr class="my-4">
+
+                <div class="row">
+                    <!-- Display tasks with high, medium, and low priority -->
+                    <div class="col-md-4">
+                        <p class="mb-2"><strong>High Priority Tasks:</strong> <span id="highPriorityTasks">0</span></p>
+                    </div>
+                    <div class="col-md-4">
+                        <p class="mb-2"><strong>Medium Priority Tasks:</strong> <span id="mediumPriorityTasks">0</span>
+                        </p>
+                    </div>
+                    <div class="col-md-4">
+                        <p class="mb-2"><strong>Low Priority Tasks:</strong> <span id="lowPriorityTasks">0</span></p>
+                    </div>
+                </div>
+
+                <hr class="my-4">
+
+                <!-- Display tasks chart -->
+                <div class="text-center">
+                    <canvas id="tasksChart" width="400" height="200"></canvas>
+                </div>
+            </div>
+
+        </div>
+        <!-- Bootstrap modal for adding new tasks -->
+        <div class="modal fade" id="addTaskModal" tabindex="-1" aria-labelledby="addTaskModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addTaskModalLabel">Add New Task</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- Form for adding new task details -->
+                        <form>
+                            <div class="mb-3">
+                                <label for="taskInput" class="form-label">Task Text</label>
+                                <input type="text" class="form-control" id="taskInput" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="dueDateInput" class="form-label">Due Date</label>
+                                <input type="date" class="form-control" id="dueDateInput">
+                            </div>
+                            <div class="mb-3">
+                                <label for="dueTimeInput" class="form-label">Due Time</label>
+                                <input type="time" class="form-control" id="dueTimeInput">
+                            </div>
+                            <div class="mb-3">
+                                <label for="priorityInput" class="form-label">Priority</label>
+                                <select class="form-select" id="priorityInput">
+                                    <option value="High">High</option>
+                                    <option value="Medium">Medium</option>
+                                    <option value="Low">Low</option>
+                                </select>
+                            </div>
+                            <button type="button" class="btn btn-primary" onclick="addTask()">Add Task</button>
+                        </form>
+                    </div>
+                </div>
             </div>
         </div>
+
         <!-- Bootstrap modal for modifying tasks -->
         <div class="modal fade" id="modifyTaskModal" tabindex="-1" aria-labelledby="modifyTaskModalLabel"
             aria-hidden="true">
@@ -177,6 +200,13 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/Darkmode.js/1.5.7/darkmode-js.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
         <script src="/abc/script.js "></script>
+        <script>
+            // Enable Bootstrap tooltips
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+        </script>
 </body>
 
 </html>

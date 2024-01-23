@@ -1,0 +1,43 @@
+@import url("https://fonts.googleapis.com/css2?family=Montserrat&family=Pacifico&family=Roboto+Slab&display=swap");
+
+body {
+  font-family: "Montserrat", sans-serif;
+}
+h1, h2 {
+  font-family: "Pacifico", cursive;
+}
+
+th {
+    font-family: 'Roboto Slab', serif;
+
+}
+
+canvas {
+    font-family: 'Roboto Slab', serif;
+
+}
+@media (max-width: 767px) {
+  .input-group {
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+  }
+  #searchInput {
+    min-width: 150px;
+  }
+  .input-group .btn {
+    margin-top: 10px;
+  }
+  tbody .imp {
+    flex-direction: column;
+    flex-wrap: wrap;
+    display: flex;
+  }
+  tbody .btn {
+    margin: 5px;
+    margin-top: 0;
+  }
+  .input-group input {
+    margin-top: 10px;
+  }
+}
