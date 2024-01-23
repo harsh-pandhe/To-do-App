@@ -43,6 +43,7 @@ h1 {
   border-radius: 4px;
   transition: background-color 0.3s;
   overflow-wrap: break-word;
+  word-wrap: break-word;
   flex-wrap: wrap;
 }
 
@@ -97,4 +98,44 @@ h1 {
 }
 .task-item label {
   overflow-wrap: break-word;
+}
+.modify-btn {
+  background-color: #3399ff;
+  color: #fff;
+  border: none;
+  padding: 8px 12px;
+  margin-right: 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.modify-btn:hover {
+  background-color: #1a66cc;
+}
+.task-buttons-container {
+  margin-left: 10px;
+}
+.task-buttons-container {
+  margin-left: 10px;
+  display: flex; /* Use flexbox to align buttons horizontally */
+}
+
+.modify-btn,
+.delete-btn,
+.complete-btn {
+  background-color: #3399ff;
+  color: #fff;
+  border: none;
+  padding: 8px 12px;
+  margin-right: 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.modify-btn:hover,
+.delete-btn:hover,
+.complete-btn:hover {
+  background-color: #1a66cc;
 }
