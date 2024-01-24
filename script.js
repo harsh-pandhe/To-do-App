@@ -8,71 +8,59 @@ class Task {
         this.priority = priority;
     }
 }
-// Function to save tasks to local storage
+
 function saveTasksToLocalStorage() {
     localStorage.setItem('tasks', JSON.stringify(tasks));
 }
 
-// Function to load tasks from local storage
 function loadTasksFromLocalStorage() {
     const storedTasks = localStorage.getItem('tasks');
     return storedTasks ? JSON.parse(storedTasks) : [];
 }
-
-// Initialize tasks by loading from local storage
 let tasks = loadTasksFromLocalStorage();
 
-// Function to add a new task
 function addTask() {
-    // Get the task input element
-    let taskInput = document.getElementById("taskInput");
+    try {
+        let taskInput = document.getElementById("taskInput");
 
-    // Get the value of the task input
-    let taskValue = taskInput.value.trim();
+        let taskValue = taskInput.value.trim();
 
-    // Get the priority value
-    let priority = document.getElementById("priorityInput").value;
+        let priority = document.getElementById("priorityInput").value;
 
-    // Get the due date and time values
-    let dueDate = document.getElementById("dueDateInput").value;
-    let dueTime = document.getElementById("dueTimeInput").value;
+        let dueDate = document.getElementById("dueDateInput").value;
+        let dueTime = document.getElementById("dueTimeInput").value;
 
-    // Check if all necessary values are filled
-    if (taskValue !== "" && priority !== "" && dueDate !== "" && dueTime !== "") {
-        // Create a task object with a unique ID, completion status, due date, time, and priority
-        let task = new Task(
-            Date.now(),
-            taskValue,
-            false,
-            dueDate,
-            dueTime,
-            priority
-        );
+        if (taskValue !== "" && priority !== "" && dueDate !== "" && dueTime !== "") {
+            let task = new Task(
+                Date.now(),
+                taskValue,
+                false,
+                dueDate,
+                dueTime,
+                priority
+            );
+            tasks.push(task);
+            taskInput.value = "";
+            document.getElementById("dueDateInput").value = "";
+            document.getElementById("dueTimeInput").value = "";
+            document.getElementById("priorityInput").value = "";
 
-        // Add the task to the tasks array
-        tasks.push(task);
+            displayTasks();
+            saveTasksToLocalStorage();
 
-        // Clear the input fields
-        taskInput.value = "";
-        document.getElementById("dueDateInput").value = "";
-        document.getElementById("dueTimeInput").value = "";
-        document.getElementById("priorityInput").value = "";
-
-        // Update the task list display
-        displayTasks();
-        saveTasksToLocalStorage();
-
-        // You can also add a success notification using Toastify
+            Toastify({
+                text: "Task added successfully!",
+                duration: 3000,
+                gravity: "bottom",
+                position: "right"
+            }).showToast();
+        } else {
+            throw new Error("Please fill in all fields to add a task!");
+        }
+    } catch (error) {
+        console.error("Error adding task:", error.message);
         Toastify({
-            text: "Task added successfully!",
-            duration: 3000,
-            gravity: "bottom",
-            position: "right"
-        }).showToast();
-    } else {
-        // If any of the values is empty, display an error notification
-        Toastify({
-            text: "Please fill in all fields to add a task!",
+            text: "An error occurred while adding the task. Please try again.",
             duration: 3000,
             gravity: "bottom",
             position: "right"
@@ -80,14 +68,11 @@ function addTask() {
     }
 }
 
-// Function to display tasks in the list
+
 function displayTasks() {
-    // Get the task list element
     let tableBody = document.getElementById("taskListTableBody");
 
     tableBody.innerHTML = "";
-
-    // Initialize statistics variables
     let totalTasks = tasks.length;
     let completedTasks = 0;
     let tasksOverdue = 0;
@@ -95,12 +80,9 @@ function displayTasks() {
     let mediumPriorityTasks = 0;
     let lowPriorityTasks = 0;
 
-    // Call the updateCharts function whenever you update the statistics
     updateCharts();
 
-    // Iterate through the tasks array and create list items
     tasks.forEach(task => {
-        // Update statistics based on task properties
         if (task.completed) {
             completedTasks++;
         }
@@ -121,10 +103,8 @@ function displayTasks() {
                 break;
         }
 
-        // Create a list item element
         let tableRow = document.createElement("tr");
 
-        // Set the content of the list item
         tableRow.innerHTML = `
             <td>${task.text}</td>
             <td>${task.dueDate ? task.dueDate : '-'}</td>
@@ -142,62 +122,49 @@ function displayTasks() {
                 </button>
             </td>
         `;
-
-
-        // Add the list item to the task list
         tableBody.appendChild(tableRow);
 
     });
 
-    // Update the total tasks count
     document.getElementById("totalTasks").textContent = totalTasks;
 
-    // Update the completed tasks count
     document.getElementById("completedTasks").textContent = completedTasks;
 
-    // Update tasks overdue count
     document.getElementById("tasksOverdue").textContent = tasksOverdue;
 
-    // Update priority tasks count
     document.getElementById("highPriorityTasks").textContent = highPriorityTasks;
     document.getElementById("mediumPriorityTasks").textContent = mediumPriorityTasks;
     document.getElementById("lowPriorityTasks").textContent = lowPriorityTasks;
 }
 
-
-// Function to modify a task
 function modifyTask(taskId) {
-    // Find the task with the specified ID in the tasks array
     let task = tasks.find(task => task.id === taskId);
 
-    // Set the initial values in the modal
+    if (!task) {
+        console.error(`Task with ID ${taskId} not found.`);
+        return;
+    }
+
     document.getElementById('modifiedTaskText').value = task.text;
     document.getElementById('modifiedDueDate').value = task.dueDate;
     document.getElementById('modifiedDueTime').value = task.dueTime;
     document.getElementById('modifiedPriority').value = task.priority;
 
-    // Show the modal
     let modifyTaskModal = new bootstrap.Modal(document.getElementById('modifyTaskModal'));
     modifyTaskModal.show();
 
-    // Handle the form submission
     document.getElementById('modifyTaskForm').addEventListener('submit', function (event) {
         event.preventDefault();
+        task.text = document.getElementById('modifiedTaskText').value || task.text;
+        task.dueDate = document.getElementById('modifiedDueDate').value || task.dueDate;
+        task.dueTime = document.getElementById('modifiedDueTime').value || task.dueTime;
+        task.priority = document.getElementById('modifiedPriority').value || task.priority;
 
-        // Update task details
-        task.text = document.getElementById('modifiedTaskText').value;
-        task.dueDate = document.getElementById('modifiedDueDate').value;
-        task.dueTime = document.getElementById('modifiedDueTime').value;
-        task.priority = document.getElementById('modifiedPriority').value;
-
-        // Update the task list display
         displayTasks();
         saveTasksToLocalStorage();
 
-        // Hide the modal
         modifyTaskModal.hide();
 
-        // Show a success notification using Toastify
         Toastify({
             text: "Task modified successfully!",
             duration: 3000,
@@ -207,129 +174,161 @@ function modifyTask(taskId) {
     });
 }
 
-// Function to toggle the completion status of a task
 function toggleCompletion(taskId) {
-    // Find the task with the specified ID in the tasks array
     let task = tasks.find(task => task.id === taskId);
 
-    // Toggle the completion status of the task
+    if (!task) {
+        console.error(`Task with ID ${taskId} not found.`);
+        return;
+    }
+
     task.completed = !task.completed;
 
-    // Update the task list display
     displayTasks();
     saveTasksToLocalStorage();
-
 }
 
-// Function to remove a task
+
 function removeTask(taskId) {
-    // Remove the task with the specified ID from the tasks array
-    tasks = tasks.filter(task => task.id !== taskId);
+    const taskIndex = tasks.findIndex(task => task.id === taskId);
 
-    // Update the task list display
-    displayTasks();
-    saveTasksToLocalStorage();
+    if (taskIndex !== -1) {
+        tasks.splice(taskIndex, 1);
 
+        displayTasks();
+        saveTasksToLocalStorage();
+    } else {
+        console.error(`Task with ID ${taskId} not found.`);
+    }
 }
 
 
-
-// Function to sort tasks alphabetically
 function sortAlphabetically() {
-    tasks.sort((a, b) => a.text.localeCompare(b.text));
-    displayTasks();
-    saveTasksToLocalStorage();
-
+    try {
+        tasks.sort((a, b) => a.text.localeCompare(b.text));
+        displayTasks();
+        saveTasksToLocalStorage();
+    } catch (error) {
+        console.error("Error sorting alphabetically:", error);
+    }
 }
 
-// Function to sort tasks by completion status
 function sortByCompletion() {
-    tasks.sort((a, b) => a.completed - b.completed);
-    displayTasks();
-    saveTasksToLocalStorage();
-
+    try {
+        tasks.sort((a, b) => a.completed - b.completed);
+        displayTasks();
+        saveTasksToLocalStorage();
+    } catch (error) {
+        console.error("Error sorting by completion:", error);
+    }
 }
+
 
 function searchTasks() {
-    // Get the search input element
-    let searchInput = document.getElementById("searchInput");
+    try {
+        let searchInput = document.getElementById("searchInput");
 
-    // Get the value of the search input
-    let searchTerm = searchInput.value.trim().toLowerCase();
-
-    // Get all task rows
-    let taskRows = document.querySelectorAll("#taskListTableBody tr");
-
-    // Iterate through the task rows and toggle visibility
-    taskRows.forEach(taskRow => {
-        let taskTextCell = taskRow.querySelector("td:nth-child(1)"); // Assuming the task text is in the first cell
-        let taskDueDateCell = taskRow.querySelector("td:nth-child(2)"); // Assuming the due date is in the second cell
-
-        // Check if the task text or due date includes the search term
-        if (taskTextCell.textContent.toLowerCase().includes(searchTerm) || taskDueDateCell.textContent.toLowerCase().includes(searchTerm)) {
-            taskRow.style.display = ""; // Show the task
-        } else {
-            taskRow.style.display = "none"; // Hide the task
+        if (!searchInput) {
+            throw new Error("Search input element not found.");
         }
-    });
+
+        let searchTerm = searchInput.value.trim().toLowerCase();
+
+        let taskRows = document.querySelectorAll("#taskListTableBody tr");
+
+        if (!taskRows || taskRows.length === 0) {
+            throw new Error("No task rows found.");
+        }
+
+        taskRows.forEach(taskRow => {
+            let taskTextCell = taskRow.querySelector("td:nth-child(1)");
+            let taskDueDateCell = taskRow.querySelector("td:nth-child(2)");
+
+            if (!taskTextCell || !taskDueDateCell) {
+                throw new Error("Task text cell or due date cell not found in a row.");
+            }
+
+            if (taskTextCell.textContent.toLowerCase().includes(searchTerm) || taskDueDateCell.textContent.toLowerCase().includes(searchTerm)) {
+                taskRow.style.display = "";
+            } else {
+                taskRow.style.display = "none";
+            }
+        });
+    } catch (error) {
+        console.error("Error in searchTasks:", error.message);
+
+        // Log the error to the browser console
+        console.error(error);
+
+        // Notify the user about the error
+        Toastify({
+            text: "An error occurred while searching for tasks. Please try again.",
+            duration: 3000,
+            gravity: "bottom",
+            position: "right"
+        }).showToast();
+    }
 }
 
 
-// Function to sort tasks by due date
 function sortByDueDate() {
-    tasks.sort((a, b) => {
-        if (a.dueDate && b.dueDate) {
-            return new Date(a.dueDate + " " + a.dueTime) - new Date(b.dueDate + " " + b.dueTime);
-        } else if (a.dueDate) {
-            return -1; // Tasks with due date come first
-        } else if (b.dueDate) {
-            return 1; // Tasks with due date come first
-        } else {
-            return 0; // No due date for both tasks
-        }
-    });
-    displayTasks();
-    saveTasksToLocalStorage();
-
+    try {
+        tasks.sort((a, b) => {
+            if (a.dueDate && b.dueDate) {
+                return new Date(a.dueDate + " " + a.dueTime) - new Date(b.dueDate + " " + b.dueTime);
+            } else if (a.dueDate) {
+                return -1;
+            } else if (b.dueDate) {
+                return 1;
+            } else {
+                return 0;
+            }
+        });
+        displayTasks();
+        saveTasksToLocalStorage();
+    } catch (error) {
+        console.error("Error sorting by due date:", error);
+    }
 }
 
-
-// Function to export data (for demonstration purposes)
 function exportData() {
-    // Convert tasks array to JSON string
-    const tasksJSON = JSON.stringify(tasks);
+    try {
+        const tasksJSON = JSON.stringify(tasks);
+        const blob = new Blob([tasksJSON], { type: 'application/json' });
 
-    // Create a Blob containing the JSON data
-    const blob = new Blob([tasksJSON], { type: 'application/json' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'tasks.json';
 
-    // Create a temporary anchor element
-    const a = document.createElement('a');
+        document.body.appendChild(a);
 
-    // Set the download attribute and create a download link
-    a.href = URL.createObjectURL(blob);
-    a.download = 'tasks.json';
+        a.click();
 
-    // Append the anchor to the document
-    document.body.appendChild(a);
-
-    // Trigger a click on the anchor to start the download
-    a.click();
-
-    // Remove the anchor from the document
-    document.body.removeChild(a);
+        document.body.removeChild(a);
+    } catch (error) {
+        console.error('Error exporting data:', error.message);
+        Toastify({
+            text: 'Error exporting data. Please try again.',
+            duration: 3000,
+            gravity: 'bottom',
+            position: 'right'
+        }).showToast();
+    }
 }
 
-// Function to sort tasks by priority
 function sortTasksByPriority() {
-    tasks.sort((a, b) => {
-        const priorityOrder = { 'High': 1, 'Medium': 2, 'Low': 3 };
-        return priorityOrder[a.priority] - priorityOrder[b.priority];
-    });
-    displayTasks();
-    saveTasksToLocalStorage();
-
+    try {
+        tasks.sort((a, b) => {
+            const priorityOrder = { 'High': 1, 'Medium': 2, 'Low': 3 };
+            return priorityOrder[a.priority] - priorityOrder[b.priority];
+        });
+        displayTasks();
+        saveTasksToLocalStorage();
+    } catch (error) {
+        console.error("Error sorting by priority:", error);
+    }
 }
-// Function to check if a task is overdue
+
 function isTaskOverdue(task) {
     if (task.dueDate && task.dueTime) {
         let dueDateTime = new Date(`${task.dueDate}T${task.dueTime}`);
@@ -338,83 +337,100 @@ function isTaskOverdue(task) {
     }
     return false;
 }
-let tasksChart = null; // Variable to store the chart instance
 
-// Function to update charts
+let tasksChart = null;
+
 function updateCharts() {
-    // Check if the chart instance exists and destroy it
-    if (tasksChart) {
-        tasksChart.destroy();
-    }
+    try {
+        if (!tasksChart) {
+            tasksChartCanvas = document.getElementById("tasksChart");
 
-    // Calculate dynamic values
-    let completedTasks = tasks.filter(task => task.completed).length;
-    let tasksOverdue = tasks.filter(task => isTaskOverdue(task)).length;
-    let highPriorityTasks = tasks.filter(task => task.priority === 'High').length;
-    let mediumPriorityTasks = tasks.filter(task => task.priority === 'Medium').length;
-    let lowPriorityTasks = tasks.filter(task => task.priority === 'Low').length;
-
-    // Get the canvas element
-    let tasksChartCanvas = document.getElementById("tasksChart");
-
-    // Create a new bar chart
-    tasksChart = new Chart(tasksChartCanvas, {
-        type: 'bar',
-        data: {
-            labels: ['Total Tasks', 'Completed Tasks', 'Tasks Overdue', 'High Priority', 'Medium Priority', 'Low Priority'],
-            datasets: [{
-                label: 'Task Statistics',
-                data: [tasks.length, completedTasks, tasksOverdue, highPriorityTasks, mediumPriorityTasks, lowPriorityTasks],
-                backgroundColor: [
-                    'rgba(255, 99, 132, 0.2)',
-                    'rgba(75, 192, 192, 0.2)',
-                    'rgba(255, 205, 86, 0.2)',
-                    'rgba(54, 162, 235, 0.2)',
-                    'rgba(153, 102, 255, 0.2)',
-                    'rgba(201, 203, 207, 0.2)',
-                ],
-                borderColor: [
-                    'rgba(255, 99, 132, 1)',
-                    'rgba(75, 192, 192, 1)',
-                    'rgba(255, 205, 86, 1)',
-                    'rgba(54, 162, 235, 1)',
-                    'rgba(153, 102, 255, 1)',
-                    'rgba(201, 203, 207, 1)',
-                ],
-                borderWidth: 1
-            }]
-        },
-        options: {
-            scales: {
-                y: {
-                    beginAtZero: true
-                }
+            if (!tasksChartCanvas) {
+                throw new Error("tasksChartCanvas element not found.");
             }
+
+            tasksChart = new Chart(tasksChartCanvas, {
+                type: 'bar',
+                data: {
+                    labels: ['Total Tasks', 'Completed Tasks', 'Tasks Overdue', 'High Priority', 'Medium Priority', 'Low Priority'],
+                    datasets: [{
+                        label: 'Task Statistics',
+                        data: [tasks.length, 0, 0, 0, 0, 0], // Initial values, will be updated later
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.2)',
+                            'rgba(75, 192, 192, 0.2)',
+                            'rgba(255, 205, 86, 0.2)',
+                            'rgba(54, 162, 235, 0.2)',
+                            'rgba(153, 102, 255, 0.2)',
+                            'rgba(201, 203, 207, 0.2)',
+                        ],
+                        borderColor: [
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(255, 205, 86, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(153, 102, 255, 1)',
+                            'rgba(201, 203, 207, 1)',
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
         }
-    });
+
+        let completedTasks = tasks.filter(task => task.completed).length;
+        let tasksOverdue = tasks.filter(task => isTaskOverdue(task)).length;
+        let highPriorityTasks = tasks.filter(task => task.priority === 'High').length;
+        let mediumPriorityTasks = tasks.filter(task => task.priority === 'Medium').length;
+        let lowPriorityTasks = tasks.filter(task => task.priority === 'Low').length;
+
+        tasksChart.data.datasets[0].data = [tasks.length, completedTasks, tasksOverdue, highPriorityTasks, mediumPriorityTasks, lowPriorityTasks];
+
+        tasksChart.update(); // Update the chart with new data
+    } catch (error) {
+        console.error("Error in updateCharts:", error.message);
+    }
 }
 
-// Call the updateCharts function whenever you update the statistics
 updateCharts();
 
 document.addEventListener('DOMContentLoaded', function () {
-    loadTasksFromLocalStorage();
-    displayTasks();
+    try {
+        loadTasksFromLocalStorage();
+        displayTasks();
+        updateCharts();
+    } catch (error) {
+        console.error('Error during DOMContentLoaded:', error.message);
+    }
 });
 
+
 const options = {
-    bottom: '93%', // default: '32px'
-    right: '2%', // default: '32px'
-    left: 'unset', // default: 'unset'
-    time: '0.5s', // default: '0.3s'
-    mixColor: '#fff', // default: '#fff'
-    backgroundColor: '#fff',  // default: '#fff'
-    buttonColorDark: '#100f2c',  // default: '#100f2c'
-    buttonColorLight: '#fff', // default: '#fff'
-    saveInCookies: false, // default: true,
-    label: '🌓', // default: ''
-    autoMatchOsTheme: true // default: true
+    bottom: '93%',
+    right: '2%',
+    left: 'unset',
+    time: '0.5s',
+    mixColor: '#fff',
+    backgroundColor: '#fff',
+    buttonColorDark: '#100f2c',
+    buttonColorLight: '#fff',
+    saveInCookies: false,
+    label: '🌓',
+    autoMatchOsTheme: true
 }
 
 const darkmode = new Darkmode(options);
-darkmode.showWidget();
+try {
+    darkmode.showWidget();
+} catch (error) {
+    console.error("Error initializing Darkmode:", error.message);
+    // You can choose to show a user-friendly error message or take appropriate action.
+}
+
